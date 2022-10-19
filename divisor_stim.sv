@@ -1,4 +1,4 @@
-program denominador_stim #(parameter size = 32) (
+program divisor_stim #(parameter size = 32) (
     //PARAMETROS?
     input clk
     output start

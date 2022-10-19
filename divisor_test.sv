@@ -8,8 +8,8 @@ module prueba_denominador();
 	logic CLK;
 	wire RSTn;
 	wire START;
-	wire [size-1:0] numerador;
-	wire [size-1:0] denominador;
+	wire [size-1:0] NUMERADOR;
+	wire [size-1:0] DENOMINADOR;
 
 	wire [size-1:0] COC;
 	wire [size-1:0] RES;
@@ -21,8 +21,23 @@ module prueba_denominador();
 	end
 
 	// stimulus
-	denominador_stim(CLK,START,RSTn,DIVIDEN,denominador);
+	divisor_stim(
+		.clk(CLK),
+		.rst_n(RSTn),
+		.start(START),
+		.numerador(NUMERADOR),
+		.denominador(DENOMINADOR)
+	);
 
 	//DUV
-	
+	Divisor_Algoritmico duv(
+		.CLK(CLK),
+		.RSTa(RSTn),
+		.Start(START),
+		.Num(NUMERADOR),
+		.Den(DENOMINADOR),
+		.Coc(COC),
+		.Res(RES),
+		.Done(DONE)
+	)
 endmodule 
