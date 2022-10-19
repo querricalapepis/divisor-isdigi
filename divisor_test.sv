@@ -57,11 +57,11 @@ module prueba_divisor();
 	end
 	
 	
-automatic task reset(ref CLK, ref RESET);
+automatic task reset(ref CLK, ref RESET_N);
 	@(negedge CLK)
-		RESET <= 1;
+		RESET_N <= 0;
 	@(negedge CLK)
-		RESET <= 0;
+		RESET_N <= 1;
 endtask
 
 automatic task divide(ref CLK, ref START);
