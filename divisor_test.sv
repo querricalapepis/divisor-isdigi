@@ -3,13 +3,13 @@ localparam size = 32;
 `timescale 1ns/1ps
 
 localparam T = 10;
-module prueba_divisor();
+module prueba_denominador();
 
 	logic CLK;
 	wire RSTn;
 	wire START;
-	wire [size-1:0] DIVIDEND;
-	wire [size-1:0] DIVISOR;
+	wire [size-1:0] numerador;
+	wire [size-1:0] denominador;
 
 	wire [size-1:0] COC;
 	wire [size-1:0] RES;
@@ -21,7 +21,8 @@ module prueba_divisor();
 	end
 
 	// stimulus
-	divisor_stim(CLK,START,RSTn,DIVIDEN,DIVISOR);
-	
+	denominador_stim(CLK,START,RSTn,DIVIDEN,denominador);
+
 	//DUV
+	
 endmodule 
