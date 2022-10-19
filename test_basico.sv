@@ -32,6 +32,21 @@ begin
 	divide(CLK, START);
     @(DONE);
     #(T*2);
+ 	NUM = 4;
+	DEN = -2;
+	divide(CLK, START);
+	@(DONE);
+    #(T*2);
+	NUM = -4;
+	DEN = 2;
+	divide(CLK, START);
+	@(DONE);
+    #(T*2);
+	NUM = -4;
+	DEN = -2;
+	divide(CLK, START);
+	@(DONE);
+    #(T*2);
     $finish;
 	
 end

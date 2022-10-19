@@ -46,7 +46,7 @@ always_ff@(posedge CLK or negedge RSTa) begin
 					ACCU <= '0;
 					CONT <= tamanyo-1;
 					SignNum <= Num[tamanyo-1];
-					SignDen <= Num[tamanyo-1];
+					SignDen <= Den[tamanyo-1];
 					Q <= Num[tamanyo-1] ? (~Num+1) : Num;
 					M <= Den[tamanyo-1] ? (~Den+1) : Den;
 				end
@@ -65,7 +65,8 @@ always_ff@(posedge CLK or negedge RSTa) begin
 			if (ACCU >= M) begin
 				Q <= Q + 1;
 				ACCU <= ACCU - M;
-			end else if(!CONT) begin
+			end 
+			if(CONT == 0) begin
 				state <= D3;
 
 			end else begin
