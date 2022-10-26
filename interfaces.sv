@@ -1,4 +1,4 @@
-interface test_if (input bit clk);
+interface test_if #(parameter size) (input bit clk);
 
     logic start
     logic rst_n
@@ -20,11 +20,11 @@ interface test_if (input bit clk);
     endclocking : monitor_cb;
 
     clocking stimulus_cb @(posedge clk);
-    default input #1ns
-    input start
-    input rst_n
-    input numerador
-    input denominador
+    default output #1ns
+    output start
+    output rst_n
+    output numerador
+    output denominador
     endclocking : stimulus_cb;
 
     modport monitor(clocking monitor_cb);
