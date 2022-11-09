@@ -1,25 +1,33 @@
-program estimulos_divisor #(parameter size = 32) (
+class RandomInputGenerator;
+	integer size;
+	randc logic [size-1:0]  numerador;
+	randc logic [size-1:0] denominador;
+
+	constraint zeroRemainder {numerador % denominador == 0;}
+	constraint notZeroRemainder {numerador % denominador != 0;}
+
+    	constraint numeradorPositive {numerador[size-1] == 0;}
+    	constraint numeradorNegative {numerador[size-1] == 1;}
+    	
+   	constraint denominadorPositive {denominador[size-1] == 0;}
+   	constraint denominadorNegative {denominador[size-1] == 1;}
+
+	function new(integer size);
+	begin
+		this.size = size;
+	end
+	endfunction
+endclass
+
+program estimulos_divisor (
     test_if.stimulus bus
 );
 
-class Bus;
-	randc logic [size-1:0] numerador;
-	randc logic [size-1:0] denominador;
-
-	constraint zeroRemainder {numerador % denominador == 0};
-	constraint notZeroRemainder {numerador % denominador != 0};
-
-    constraint numeradorPositive {numerador[size-1] == 0}
-    constraint numeradorNegative {numerador[size-1] == 1}
-    
-    constraint denominadorPositive {denominador[size-1] == 0}
-    constraint denominadorNegative {denominador[size-1] == 1}
-endclass
-
-Bus busInst = new;
+RandomInputGenerator randomInput;
 
 initial begin
-		init(bus.clk, bus.rst_n, bus.start, bus.numerador, bus.denominador);
+	randomInput = new(32);
+	init(bus.clk, bus.rst_n, bus.start, bus.numerador, bus.denominador);
         zeroRemainderDivisons(bus.clk, bus.start);
         notZeroRemainderDivisions(bus.clk, bus.start);
         positiveDivision1(bus.clk, bus.start);
@@ -28,89 +36,89 @@ initial begin
         negativeDivision2(bus.clk, bus.start);
 end
 
-automatic task init(ref clk, ref rst_n, ref start, ref num, ref den);
+task automatic  init(ref clk, ref rst_n, ref start, ref num, ref den);
     start = 0;
     num = 0;
     den = 0;
     reset(clk,rst_n);
 endtask
 
-automatic task reset(ref clk, ref rst_n);
+task automatic reset(ref clk, ref rst_n);
 	@(negedge clk)
 		rst_n <= 0;
 	@(negedge clk)
 		rst_n <= 1;
 endtask
 
-automatic task divide(ref clk, ref start);
+task automatic divide(ref clk, ref start);
 	@(negedge clk)
 		start = 1;
 	@(negedge clk)
 		start = 0;
 endtask
 
-automatic task newDivison(ref clk, ref start);
-    busInst.randomize(); 
-    numerador = busInst.numerador;
-	denominador = busInst.denominador;
+task automatic newDivison(ref clk, ref start);
+    randomInput.randomize(); 
+    numerador = randomInput.numerador;
+	denominador = randomInput.denominador;
     divide(clk, start);
 endtask
 
-automatic task zeroRemainderDivisions(ref clk, ref start);
-    busInst.notZeroRemainder.constraint_mode(1);
-    busInst.zeroRemainder.constraint_mode(0);
+task automatic zeroRemainderDivisions(ref clk, ref start);
+    randomInput.notZeroRemainder.constraint_mode(1);
+    randomInput.zeroRemainder.constraint_mode(0);
     repeat(100) begin
         newDivision(clk, start);
     end
 endtask
 
-automatic task notZeroRemainderDivisions(ref clk, ref start);
-    busInst.notZeroRemainder.constraint_mode(0);
-    busInst.zeroRemainder.constraint_mode(1);
+task automatic notZeroRemainderDivisions(ref clk, ref start);
+    randomInput.notZeroRemainder.constraint_mode(0);
+    randomInput.zeroRemainder.constraint_mode(1);
     repeat(100) begin
         newDivision(clk, start);
     end
 endtask
 
-automatic task positiveDivision1(ref clk, ref start);
-    busInst.numeradorPositive.constraint_mode(1);
-    busInst.denominadorPositive.constraint_mode(1);
-    busInst.numeradorNegative.constraint_mode(0);
-    busInst.denominadorNegative.constraint_mode(0);
+task automatic positiveDivision1(ref clk, ref start);
+    randomInput.numeradorPositive.constraint_mode(1);
+    randomInput.denominadorPositive.constraint_mode(1);
+    randomInput.numeradorNegative.constraint_mode(0);
+    randomInput.denominadorNegative.constraint_mode(0);
     repeat(100) begin
        newDivison(clk, start);
     end
 endtask
 
-automatic task positiveDivision2(ref clk, ref start);
-    busInst.numeradorPositive.constraint_mode(0);
-    busInst.denominadorPositive.constraint_mode(0);
-    busInst.numeradorNegative.constraint_mode(1);
-    busInst.denominadorNegative.constraint_mode(1);
+task automatic positiveDivision2(ref clk, ref start);
+    randomInput.numeradorPositive.constraint_mode(0);
+    randomInput.denominadorPositive.constraint_mode(0);
+    randomInput.numeradorNegative.constraint_mode(1);
+    randomInput.denominadorNegative.constraint_mode(1);
     repeat(100) begin
        newDivison(clk, start);
     end
 endtask
 
 
-automatic task negativeDivision1(ref clk, ref start);
-    busInst.numeradorPositive.constraint_mode(1);
-    busInst.denominadorPositive.constraint_mode(0);
-    busInst.numeradorNegative.constraint_mode(0);
-    busInst.denominadorNegative.constraint_mode(1);
+task automatic negativeDivision1(ref clk, ref start);
+    randomInput.numeradorPositive.constraint_mode(1);
+    randomInput.denominadorPositive.constraint_mode(0);
+    randomInput.numeradorNegative.constraint_mode(0);
+    randomInput.denominadorNegative.constraint_mode(1);
     repeat(100) begin
         newDivison(clk, start);
     end
 endtask
 
-automatic task negativeDivision2(ref clk, ref start);
-    busInst.numeradorPositive.constraint_mode(0);
-    busInst.denominadorPositive.constraint_mode(1);
-    busInst.numeradorNegative.constraint_mode(1);
-    busInst.denominadorNegative.constraint_mode(0);
+task automatic negativeDivision2(ref clk, ref start);
+    randomInput.numeradorPositive.constraint_mode(0);
+    randomInput.denominadorPositive.constraint_mode(1);
+    randomInput.numeradorNegative.constraint_mode(1);
+    randomInput.denominadorNegative.constraint_mode(0);
     repeat(100) begin
         newDivison(clk, start);
     end
 endtask
 
-endprogram : denominador_stim
+endprogram : estimulos_divisor

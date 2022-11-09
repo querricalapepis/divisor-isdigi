@@ -43,12 +43,15 @@ module prueba_denominador();
 		.Coc(bus.duv.conciente),
 		.Res(bus.duv.resto),
 		.Done(bus.duv.done)
-	)
+	);
 
 	//Scoreboard
-	Scoreboard scoreboard = new(bus.monitor);
+	Scoreboard scoreboard;
 	initial begin
-		scoreboard.monitor_input;
-		scoreboard.monitor_output;
+		scoreboard = new(bus.monitor);
+		fork
+			scoreboard.monitor_input;
+			scoreboard.monitor_output;
+		join_none
 	end
 endmodule 
