@@ -14,21 +14,27 @@ module prueba_denominador();
 	wire [size-1:0] COC;
 	wire [size-1:0] RES;
 	wire DONE;
+
+	localparam size = 32;
 	
+	always begin
+    	CLK = 0;
+   		#(T/2) CLK = !CLK;
+	end
+
 	initial begin
-    CLK = 0;
-    forever #(T/2) CLK = !CLK;
+		RSTn = 1;
 	end
 
 	test_if bus();
 
 	// stimulus
-	divisor_stim(
+	estimulos_divisor estim(
 		.bus(bus.stimulus)
 	);
 
 	//DUV
-	Divisor_Algoritmico #(.tamanyo(32)) duv(
+	Divisor_Algoritmico #(.tamanyo(size)) duv(
 		.CLK(bus.duv.clk),
 		.RSTa(bus.duv.rst_n),
 		.Start(bus.duv.start),
@@ -38,4 +44,11 @@ module prueba_denominador();
 		.Res(bus.duv.resto),
 		.Done(bus.duv.done)
 	)
+
+	//Scoreboard
+	Scoreboard scoreboard = new(bus.monitor);
+	initial begin
+		scoreboard.monitor_input;
+		scoreboard.monitor_output;
+	end
 endmodule 

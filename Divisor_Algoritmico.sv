@@ -1,6 +1,4 @@
 module Divisor_Algoritmico
- 
-
 #(parameter tamanyo=32)           
 (input CLK,
 input RSTa,
@@ -14,15 +12,11 @@ output Done);
 
 
 //vuestro código
-
-
 logic [tamanyo-1 : 0] ACCU, Q, M;
 logic [$clog2(tamanyo) - 1 : 0] CONT;
 logic fin, SignDen, SignNum;
 
 enum int unsigned { D0 = 0, D1 = 2, D2 = 4, D3 = 8 } state;
-
-
 
 always_ff@(posedge CLK or negedge RSTa) begin
 	if(~RSTa) begin
@@ -84,23 +78,5 @@ always_ff@(posedge CLK or negedge RSTa) begin
 
 
 assign Done = fin;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 endmodule 

@@ -1,5 +1,5 @@
-program divisor_stim #(parameter size = 32) (
-    test_if bus
+program estimulos_divisor #(parameter size = 32) (
+    test_if.stimulus bus
 );
 
 class Bus;
