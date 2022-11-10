@@ -1,12 +1,16 @@
+`timescale 1ns/1ps
+localparam T = 10;
+
 localparam size = 32;
 
-`timescale 1ns/1ps
+`include "interfaces.sv"
+`include "Scoreboard.sv"
+`include "divisor_stim.sv"
 
-localparam T = 10;
-module prueba_denominador();
+module test_divisor();
 
 	logic CLK;
-	wire RSTn;
+	logic RSTn;
 	wire START;
 	wire [size-1:0] NUMERADOR;
 	wire [size-1:0] DENOMINADOR;

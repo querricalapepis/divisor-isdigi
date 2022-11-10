@@ -1,12 +1,12 @@
 //`timescale 1ns/1ps
-interface test_if #(parameter size) (input bit clk);
+interface test_if #(SIZE=32) (input bit clk);
 
     logic start;
     logic rst_n;
-    logic [size-1:0] numerador;
-    logic [size-1:0] denominador;
-    logic [size-1:0] cociente;
-    logic [size-1:0] resto;
+    logic [SIZE-1:0] numerador;
+    logic [SIZE-1:0] denominador;
+    logic [SIZE-1:0] cociente;
+    logic [SIZE-1:0] resto;
     logic done;
 
     clocking monitor_cb @(posedge clk);

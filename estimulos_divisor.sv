@@ -1,5 +1,4 @@
-class RandomInputGenerator;
-	integer size;
+class RandomInputGenerator #(int size = 32);
 	randc logic [size-1:0]  numerador;
 	randc logic [size-1:0] denominador;
 
@@ -12,9 +11,8 @@ class RandomInputGenerator;
    	constraint denominadorPositive {denominador[size-1] == 0;}
    	constraint denominadorNegative {denominador[size-1] == 1;}
 
-	function new(integer size);
+	function new();
 	begin
-		this.size = size;
 	end
 	endfunction
 endclass
@@ -23,10 +21,10 @@ program estimulos_divisor (
     test_if.stimulus bus
 );
 
-RandomInputGenerator randomInput;
+RandomInputGenerator #(.size(32)) randomInput;
 
 initial begin
-	randomInput = new(32);
+	randomInput = new;
 	init(bus.clk, bus.rst_n, bus.start, bus.numerador, bus.denominador);
         zeroRemainderDivisons(bus.clk, bus.start);
         notZeroRemainderDivisions(bus.clk, bus.start);
@@ -34,9 +32,10 @@ initial begin
         positiveDivision2(bus.clk, bus.start);
         negativeDivision1(bus.clk, bus.start);
         negativeDivision2(bus.clk, bus.start);
+	$stop;
 end
 
-task automatic  init(ref clk, ref rst_n, ref start, ref num, ref den);
+task automatic init(ref clk, ref rst_n, ref start, ref num, ref den);
     start = 0;
     num = 0;
     den = 0;
@@ -45,9 +44,9 @@ endtask
 
 task automatic reset(ref clk, ref rst_n);
 	@(negedge clk)
-		rst_n <= 0;
+		rst_n = 0;
 	@(negedge clk)
-		rst_n <= 1;
+		rst_n = 1;
 endtask
 
 task automatic divide(ref clk, ref start);
@@ -59,8 +58,8 @@ endtask
 
 task automatic newDivison(ref clk, ref start);
     randomInput.randomize(); 
-    numerador = randomInput.numerador;
-	denominador = randomInput.denominador;
+    bus.numerador = randomInput.numerador;
+    bus.denominador = randomInput.denominador;
     divide(clk, start);
 endtask
 
