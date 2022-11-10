@@ -1,8 +1,6 @@
 //`timescale 1ns/1ps
-interface test_if #(parameter SIZE=32) (input logic clk);
-
+interface test_if #(parameter SIZE=32) (input bit clk, input bit rst_n);
     logic start;
-    logic rst_n;
     logic [SIZE-1:0] numerador;
     logic [SIZE-1:0] denominador;
     logic [SIZE-1:0] cociente;
@@ -10,23 +8,23 @@ interface test_if #(parameter SIZE=32) (input logic clk);
     logic done;
 
     clocking monitor_cb @(posedge clk);
-		 default input #1ns;
-		 input start;
-		 input rst_n;
-		 input numerador;
-		 input denominador;
-		 input cociente;
-		 input resto;
-		 input done;
-    endclocking : monitor_cb
+        default input #3ns;
+        input start;
+        input rst_n;
+        input numerador;
+        input denominador;
+        input cociente;
+        input resto;
+        input done;
+    endclocking : monitor_cb;
 
     clocking stimulus_cb @(posedge clk);
-		 default output #1ns;
-		 output start;
-		 output rst_n;
-		 output numerador;
-		 output denominador;
-    endclocking : stimulus_cb
+        default output #3ns;
+        output start;
+        output rst_n;
+        output numerador;
+        output denominador;
+    endclocking : stimulus_cb;
 
     modport monitor(clocking monitor_cb);
     modport stimulus(clocking stimulus_cb);
