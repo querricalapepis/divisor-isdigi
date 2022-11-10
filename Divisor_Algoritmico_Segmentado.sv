@@ -1,7 +1,7 @@
 module Divisor_Algoritmico_Segmentado
  
 
-#(parameter tamanyo=32, etapas=32)           
+#(parameter tamanyo=32, etapas=tamanyo)           
 (input CLK,
 input RSTa,
 input Start,
@@ -20,6 +20,7 @@ logic [etapas-1:0] [tamanyo-1 : 0] ACCU, Q, M;
 //logic [etapas-1:0] [$clog2(tamanyo) - 1 : 0] CONT;
 logic [etapas-1:0] SignDen, SignNum;
 logic fin;
+reg [tamanyo-1:0] CocAux, ResAux;
 
 /* Aquí creamos las variables que vamos a ir modificando dependiendo de la etapa, ha desaparecido el contador CONT, debido a la segmentación*/
 
@@ -27,15 +28,15 @@ logic fin;
 always_ff@(posedge CLK or negedge RSTa) begin
 	if(~RSTa) begin
 //INICIAMOS LA MAYORÍA DE VARIABLES A 0, YA QUE TENEMOS QUE DARLES UN VALOR ORIGINAL, POR SI SE PRODUCEUN RESET, NO TENER GUARDADOS VALORES ANTERIORES O DESCONOCIDOS
-        ACCU 		<=	'0;
-        SignNum  	<= 	'0;
-        SignDen  	<= 	'0;
-		Q  			<= 	'0;
-        M 			<= 	'0;
-        fin  		<= 	'0;
-		START 		<= 	'0;
-		Coc 		<= 	'0;
-		Res 		<= 	'0;
+        ACCU 		<='0;
+        SignNum  	<='0;
+        SignDen  	<='0;
+		Q  			<='0;
+        M 			<='0;
+        fin  		<='0;
+		START 		<='0;
+		Coc 		<='0;
+		Res 		<='0;
     end
 	else 
     begin
@@ -49,43 +50,42 @@ always_ff@(posedge CLK or negedge RSTa) begin
 			ACCU [etapas-1] <= '0;
 			Q [etapas-1] <= Num[tamanyo-1] ? (~Num+1) : Num;
 			M [etapas-1] <= Den[tamanyo-1] ? (~Den+1) : Den;
-
         end
-        for (int i = (etapas-2); i >= 0; i = i-1) 
+        for (int i = (etapas-2); i > -1 ; i = i-1) 
 		begin 
 			// ESTAMOS DESPLAZANDO EL START, HASTA LA ÚLTIMA ETAPA, CON EL FIN DE SABER EN QUE MOMENTO DEBEMOS HACER UNA OPERACIÓN 
 			START[i]<= START[i+1];
-			SignNum[i] <= SignNum[i+1];
-			SignDen[i] <= SignDen[i+1];
-			ACCU[i] <= ACCU[i+1];
-			Q[i] <= Q[i+1];
-			M[i] <= M[i+1];
-
-			if(START[i]) 
+			if(START[i+1]) 
 			/*SI EL START DE ESA ETAPA SE CUMPLE, DEBEREMOS REALIZAR LAS OPERACIONES, ESTA SEÑAL NO ES COMO LA ANTERIOR, YA QUE AHORA REALIZAR LA OPERACIÓN IRA ATRAVESANDO NUESTRA RED SEGMENTADA,
 			DE MANERA QUE  SOLO CUANDO LA SEÑAL DE START ESTÉ ACTIVADA EN CADA ETAPA SE REAILZARÁ EL PROPIO DESPLAZAMIENTO*/ 
 			begin
-				{ACCU[i],Q[i]} <= {ACCU[i][tamanyo-2:0], Q[i], 1'b0};
+				SignNum[i] <= SignNum[i+1];
+				SignDen[i] <= SignDen[i+1];
+				M[i] <= M[i+1];
+				{ACCU[i],Q[i]} <= {ACCU[i+1][tamanyo-2:0], Q[i+1], 1'b0};
 
 				if (ACCU[i] >= M[i]) 
 				begin
 						Q[i] <= Q[i] + 1;
 						ACCU[i] <= ACCU[i] - M[i];
 				end 
-				if (i == 0) // REALMENTE NO ES CONTADOR I==0, ES CUANDO HAYAN PASADO X CICLOS, POR LO QUE EL CONTADOR NO DEBERIAMOS ELIMINARLO??????????, voy a crear un contador por etapa. 
-				begin
-						fin <= 1'b1;
-						Coc <= (SignNum[i]^SignDen[i]) ? (~Q[i]+1) : Q[i];
-						Res <= SignNum[i] ? (~ACCU[i]+1) : ACCU[i];
-				end
-
+				
 			end
 				
 		end
     end
 end
 
-assign Done = fin;
+assign Done = START[0];
+always_comb begin
+if (START[0]) // REALMENTE NO ES CONTADOR I==0, ES CUANDO HAYAN PASADO X CICLOS, POR LO QUE EL CONTADOR NO DEBERIAMOS ELIMINARLO??????????, voy a crear un contador por etapa. 
+begin
+	CocAux = (SignNum[0]^SignDen[0]) ? (~Q[0]+1) : Q[0];
+	ResAux = SignNum[0] ? (~ACCU[0]+1) : ACCU[0];
+end
+end
 
+assign Coc = CocAux;
+assign Res = ResAux;
 
 endmodule 
