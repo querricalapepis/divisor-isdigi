@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 localparam T = 10;
 
-localparam size = 32;
+localparam SIZE = 32;
 
 `include "interfaces.sv"
 `include "Scoreboard.sv"
@@ -10,16 +10,14 @@ localparam size = 32;
 module test_divisor();
 
 	logic CLK;
-	logic RSTn;
-	wire START;
-	wire [size-1:0] NUMERADOR;
-	wire [size-1:0] DENOMINADOR;
+	logic RST_N;
+	logic START;
+	logic [SIZE-1:0] NUMERADOR;
+	logic [SIZE-1:0] DENOMINADOR;
 
-	wire [size-1:0] COC;
-	wire [size-1:0] RES;
-	wire DONE;
-
-	localparam size = 32;
+	logic [SIZE-1:0] COC;
+	logic [SIZE-1:0] RES;
+	logic DONE;
 	
 	always begin
     	CLK = 0;
@@ -27,30 +25,23 @@ module test_divisor();
 	end
 
 	initial begin
-		RSTn = 1;
+		RST_N = 1;
 	end
 
-	test_if bus();
+	test_if #(.SIZE(SIZE)) bus(.clk(CLK));
 
 	// stimulus
-	estimulos_divisor estim(
+	estimulos_divisor #(.SIZE(SIZE)) estimulos(
 		.bus(bus.stimulus)
 	);
 
 	//DUV
-	Divisor_Algoritmico #(.tamanyo(size)) duv(
-		.CLK(bus.duv.clk),
-		.RSTa(bus.duv.rst_n),
-		.Start(bus.duv.start),
-		.Num(bus.duv.numerador),
-		.Den(bus.duv.denominador),
-		.Coc(bus.duv.cociente),
-		.Res(bus.duv.resto),
-		.Done(bus.duv.done)
+	divisor_top #(.tamanyo(SIZE)) duv (
+		.bus(bus.duv)
 	);
 
 	//Scoreboard
-	Scoreboard scoreboard;
+	Scoreboard #(.SIZE(SIZE)) scoreboard;
 	initial begin
 		scoreboard = new(bus.monitor);
 		fork

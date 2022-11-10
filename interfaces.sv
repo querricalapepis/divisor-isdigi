@@ -1,5 +1,5 @@
 //`timescale 1ns/1ps
-interface test_if #(SIZE=32) (input bit clk);
+interface test_if #(parameter SIZE=32) (input logic clk);
 
     logic start;
     logic rst_n;

@@ -1,4 +1,4 @@
-localparam size = 32, etapas = 32;
+localparam SIZE = 32, etapas = 32;
 `timescale 1ns/1ps
 
 module test_basico_seg();
@@ -6,14 +6,14 @@ module test_basico_seg();
 	logic CLK;
 	logic RSTn;
 	logic START;
-	logic [size-1:0] NUM;
-	logic [size-1:0] DEN;
+	logic [SIZE-1:0] NUM;
+	logic [SIZE-1:0] DEN;
 
-	logic [size-1:0] COC;
-	logic [size-1:0] RES;
+	logic [SIZE-1:0] COC;
+	logic [SIZE-1:0] RES;
 	logic DONE;
 Divisor_Algoritmico_Segmentado DUV(CLK, RSTn, START, NUM, DEN, COC, RES, DONE);
-defparam DUV.tamanyo = size;
+defparam DUV.tamanyo = SIZE;
 
 localparam T = 10;
 

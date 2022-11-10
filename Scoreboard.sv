@@ -3,7 +3,7 @@ class Result #(parameter SIZE = 32);
     bit [SIZE-1:0] resto;
 endclass
 
-class Scoreboard #(SIZE = 32);
+class Scoreboard #(parameter SIZE = 32);
     Result cola_targets[$];
     virtual test_if.monitor mports;
 

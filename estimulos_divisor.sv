@@ -1,15 +1,15 @@
-class RandomInputGenerator #(int size = 32);
-	randc logic [size-1:0]  numerador;
-	randc logic [size-1:0] denominador;
+class RandomInputGenerator #(parameter SIZE = 32);
+	randc logic [SIZE-1:0]  numerador;
+	randc logic [SIZE-1:0] denominador;
 
 	constraint zeroRemainder {numerador % denominador == 0;}
 	constraint notZeroRemainder {numerador % denominador != 0;}
 
-    	constraint numeradorPositive {numerador[size-1] == 0;}
-    	constraint numeradorNegative {numerador[size-1] == 1;}
+    	constraint numeradorPositive {numerador[SIZE-1] == 0;}
+    	constraint numeradorNegative {numerador[SIZE-1] == 1;}
     	
-   	constraint denominadorPositive {denominador[size-1] == 0;}
-   	constraint denominadorNegative {denominador[size-1] == 1;}
+   	constraint denominadorPositive {denominador[SIZE-1] == 0;}
+   	constraint denominadorNegative {denominador[SIZE-1] == 1;}
 
 	function new();
 	begin
@@ -17,16 +17,16 @@ class RandomInputGenerator #(int size = 32);
 	endfunction
 endclass
 
-program estimulos_divisor (
+program estimulos_divisor #(parameter SIZE = 32) (
     test_if.stimulus bus
 );
 
-RandomInputGenerator #(.size(32)) randomInput;
+RandomInputGenerator #(.SIZE(SIZE)) randomInput;
 
 initial begin
 	randomInput = new;
 	init(bus.clk, bus.rst_n, bus.start, bus.numerador, bus.denominador);
-        zeroRemainderDivisons(bus.clk, bus.start);
+        zeroRemainderDivisions(bus.clk, bus.start);
         notZeroRemainderDivisions(bus.clk, bus.start);
         positiveDivision1(bus.clk, bus.start);
         positiveDivision2(bus.clk, bus.start);
@@ -35,7 +35,7 @@ initial begin
 	$stop;
 end
 
-task automatic init(ref clk, ref rst_n, ref start, ref num, ref den);
+task automatic init(ref clk, ref rst_n, ref start, ref logic[SIZE-1:0] num, ref logic[SIZE-1:0] den);
     start = 0;
     num = 0;
     den = 0;
