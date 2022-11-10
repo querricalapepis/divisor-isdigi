@@ -56,7 +56,7 @@ task automatic divide(ref clk, ref start);
 		start = 0;
 endtask
 
-task automatic newDivison(ref clk, ref start);
+task automatic newDivision(ref clk, ref start);
     randomInput.randomize(); 
     bus.numerador = randomInput.numerador;
     bus.denominador = randomInput.denominador;
@@ -85,7 +85,7 @@ task automatic positiveDivision1(ref clk, ref start);
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
     repeat(100) begin
-       newDivison(clk, start);
+       newDivision(clk, start);
     end
 endtask
 
@@ -95,7 +95,7 @@ task automatic positiveDivision2(ref clk, ref start);
     randomInput.numeradorNegative.constraint_mode(1);
     randomInput.denominadorNegative.constraint_mode(1);
     repeat(100) begin
-       newDivison(clk, start);
+       newDivision(clk, start);
     end
 endtask
 
@@ -106,7 +106,7 @@ task automatic negativeDivision1(ref clk, ref start);
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(1);
     repeat(100) begin
-        newDivison(clk, start);
+        newDivision(clk, start);
     end
 endtask
 
@@ -116,7 +116,7 @@ task automatic negativeDivision2(ref clk, ref start);
     randomInput.numeradorNegative.constraint_mode(1);
     randomInput.denominadorNegative.constraint_mode(0);
     repeat(100) begin
-        newDivison(clk, start);
+        newDivision(clk, start);
     end
 endtask
 

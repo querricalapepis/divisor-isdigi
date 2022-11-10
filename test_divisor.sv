@@ -5,7 +5,7 @@ localparam size = 32;
 
 `include "interfaces.sv"
 `include "Scoreboard.sv"
-`include "divisor_stim.sv"
+`include "estimulos_divisor.sv"
 
 module test_divisor();
 
@@ -44,7 +44,7 @@ module test_divisor();
 		.Start(bus.duv.start),
 		.Num(bus.duv.numerador),
 		.Den(bus.duv.denominador),
-		.Coc(bus.duv.conciente),
+		.Coc(bus.duv.cociente),
 		.Res(bus.duv.resto),
 		.Done(bus.duv.done)
 	);
