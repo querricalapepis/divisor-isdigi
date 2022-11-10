@@ -1,6 +1,6 @@
-module divisor_top #(.tamanyo(size)) (test_if.duv bus);
+module divisor_top #(parameter tamanyo = 32) (test_if.duv bus);
 
-Divisor_Algoritmico #(.tamanyo(size)) divisor(
+Divisor_Algoritmico #(.tamanyo(tamanyo)) divisor(
         .CLK(bus.clk),
 		.RSTa(bus.rst_n),
 		.Start(bus.start),
