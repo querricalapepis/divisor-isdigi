@@ -38,15 +38,8 @@ module test_divisor();
 	);
 
 	//DUV
-	Divisor_Algoritmico #(.tamanyo(size)) duv(
-		.CLK(bus.duv.clk),
-		.RSTa(bus.duv.rst_n),
-		.Start(bus.duv.start),
-		.Num(bus.duv.numerador),
-		.Den(bus.duv.denominador),
-		.Coc(bus.duv.cociente),
-		.Res(bus.duv.resto),
-		.Done(bus.duv.done)
+	divisor_top #(.tamanyo(size)) duv (
+		.bus(bus.duv)
 	);
 
 	//Scoreboard
