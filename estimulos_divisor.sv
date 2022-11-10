@@ -24,6 +24,7 @@ program estimulos_divisor #(parameter SIZE = 32) (
 RandomInputGenerator #(.SIZE(SIZE)) randomInput;
 
 initial begin
+    repeat(2) @(bus.stimulus_cb)
 	randomInput = new();
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(0);
@@ -32,8 +33,8 @@ initial begin
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
 	init();
-    zeroRemainderDivisions();
-    notZeroRemainderDivisions();
+   // zeroRemainderDivisions();
+    //notZeroRemainderDivisions();
     positiveDivision1();
     positiveDivision2();
     negativeDivision1();
@@ -45,12 +46,6 @@ task init();
     bus.stimulus_cb.start <= 0;
     bus.stimulus_cb.numerador <= 0;
     bus.stimulus_cb.denominador <= 0;
-    reset();
-endtask
-
-task reset();
-	bus.stimulus_cb.rst_n <= 0;
-	@(bus.stimulus_cb) bus.stimulus_cb.rst_n <= 1;
 endtask
 
 task divide();
@@ -88,6 +83,7 @@ task positiveDivision1();
     randomInput.denominadorNegative.constraint_mode(0);
     repeat(3) begin
        newDivision();
+       @(bus.stimulus_cb.done);
     end
 endtask
 

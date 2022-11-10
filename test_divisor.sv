@@ -27,6 +27,8 @@ module test_divisor();
 	end 
 
 	initial begin
+		RST_N = 0;
+		#(T)
 		RST_N = 1;
 	end
 

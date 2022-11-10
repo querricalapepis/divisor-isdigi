@@ -19,7 +19,8 @@ interface test_if #(parameter SIZE=32) (input bit clk, input bit rst_n);
     endclocking : monitor_cb;
 
     clocking stimulus_cb @(posedge clk);
-        default output #3ns;
+        default input #3ns output #3ns;
+        input done;
         output start;
         output rst_n;
         output numerador;
