@@ -79,5 +79,6 @@ always_ff@(posedge CLK or negedge RSTa) begin
 
 
 assign Done = fin;
+//ASERCION DIVIDIR ENTRE 0 
 
 endmodule 
