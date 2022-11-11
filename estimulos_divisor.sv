@@ -10,6 +10,7 @@ class RandomInputGenerator #(parameter SIZE = 32);
     	
    	constraint denominadorPositive {denominador[SIZE-1] == 0;}
    	constraint denominadorNegative {denominador[SIZE-1] == 1;}
+    constraint notZeroDenominator {denominador != 0;}
 
 	function new();
 	begin
@@ -21,10 +22,28 @@ program estimulos_divisor #(parameter SIZE = 32) (
     test_if.stimulus bus
 );
 
+covergroup cg @(bus.stimulus_cb);
+    num: coverpoint bus.stimulus_cb.numerador {
+        bins pos = { [0:(2^SIZE)/2 -1] };
+        bins neg = { [(2^SIZE)/2:$] };
+    }
+    den: coverpoint bus.stimulus_cb.denominador {
+        bins pos = { [0:(2^SIZE)/2 -1] };
+        bins neg = { [(2^SIZE)/2:$] };
+        illegal_bins ilegal = {0};
+    }
+    c : cross num, den {  // 16 bins
+        bins pos = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
+        bins neg = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
+    }
+endgroup
+
 RandomInputGenerator #(.SIZE(SIZE)) randomInput;
+cg cg_test;
 
 initial begin
     repeat(2) @(bus.stimulus_cb)
+    cg_test = new();
 	randomInput = new();
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(0);
@@ -33,12 +52,15 @@ initial begin
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
 	init();
-   // zeroRemainderDivisions();
+   //zeroRemainderDivisions();
     //notZeroRemainderDivisions();
-    positiveDivision1();
-    positiveDivision2();
-    negativeDivision1();
-    negativeDivision2();
+
+    //while(cg_test.get_coverage()<70) begin 
+        positiveDivision1();
+        positiveDivision2();
+        negativeDivision1();
+        negativeDivision2();
+    //end
 	$stop;
 end
 
@@ -58,22 +80,21 @@ task newDivision();
     bus.stimulus_cb.numerador <= randomInput.numerador;
     bus.stimulus_cb.denominador <= randomInput.denominador;
     @(bus.stimulus_cb) divide();
+    @(bus.stimulus_cb.done);
 endtask
 
-task zeroRemainderDivisions();
+task zeroRemainderDivision();
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(1);
-    repeat(3) begin
-        newDivision();
-    end
+
+     newDivision();
+    
 endtask
 
 task notZeroRemainderDivisions();
     randomInput.notZeroRemainder.constraint_mode(1);
     randomInput.zeroRemainder.constraint_mode(0);
-    repeat(3) begin
         newDivision();
-    end
 endtask
 
 task positiveDivision1();
@@ -81,10 +102,7 @@ task positiveDivision1();
     randomInput.denominadorPositive.constraint_mode(1);
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
-    repeat(3) begin
-       newDivision();
-       @(bus.stimulus_cb.done);
-    end
+    newDivision();
 endtask
 
 task positiveDivision2();
@@ -92,9 +110,7 @@ task positiveDivision2();
     randomInput.denominadorPositive.constraint_mode(0);
     randomInput.numeradorNegative.constraint_mode(1);
     randomInput.denominadorNegative.constraint_mode(1);
-    repeat(3) begin
        newDivision();
-    end
 endtask
 
 
@@ -103,9 +119,7 @@ task negativeDivision1();
     randomInput.denominadorPositive.constraint_mode(0);
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(1);
-    repeat(3) begin
         newDivision();
-    end
 endtask
 
 task negativeDivision2();
@@ -113,9 +127,7 @@ task negativeDivision2();
     randomInput.denominadorPositive.constraint_mode(1);
     randomInput.numeradorNegative.constraint_mode(1);
     randomInput.denominadorNegative.constraint_mode(0);
-    repeat(3) begin
         newDivision();
-    end
 endtask
 
 endprogram : estimulos_divisor
