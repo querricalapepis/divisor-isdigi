@@ -108,5 +108,13 @@ always_comb begin
 
 assign Done = fin;
 //ASERCION DIVIDIR ENTRE 0 
+// si done activo  y cociente y resto es 0 y los valores de entrada son distintos de 0
+// si haces una division y 32 cclos despues no tienes resultado
+// comprobar reseteo, si al resetear las señales de despues no van bien
+// i haces una division con un positivo y un negativo el cociente tiene que ser negativo a no ser que el numerador sea 0
+// si estas en estado 0 las funciones estén en 0
+// si start es uno que pase al siguiente estado ()
+// si acu es mayo o igual que m, q tiene que ser q+1
+
 
 endmodule 
