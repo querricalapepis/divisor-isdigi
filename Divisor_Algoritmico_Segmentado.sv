@@ -1,7 +1,7 @@
 module Divisor_Algoritmico_Segmentado
  
 
-#(parameter tamanyo=32, etapas=tamanyo)           
+#(parameter tamanyo=32, etapas=tamanyo*2+1)           
 (input CLK,
 input RSTa,
 input Start,
@@ -35,12 +35,10 @@ always_ff@(posedge CLK or negedge RSTa) begin
         M 			<='0;
         fin  		<='0;
 		START 		<='0;
-		Coc 		<='0;
-		Res 		<='0;
+
     end
 	else 
     begin
-        fin <= '0;
         START [etapas-1] <= Start;
         if (Start)
         begin
@@ -50,42 +48,55 @@ always_ff@(posedge CLK or negedge RSTa) begin
 			ACCU [etapas-1] <= '0;
 			Q [etapas-1] <= Num[tamanyo-1] ? (~Num+1) : Num;
 			M [etapas-1] <= Den[tamanyo-1] ? (~Den+1) : Den;
+
         end
-        for (int i = (etapas-2); i > -1 ; i = i-1) 
+        for (int i = etapas - 2 ; i > -1 ; i = i-1) 
 		begin 
 			// ESTAMOS DESPLAZANDO EL START, HASTA LA ÚLTIMA ETAPA, CON EL FIN DE SABER EN QUE MOMENTO DEBEMOS HACER UNA OPERACIÓN 
+
 			START[i]<= START[i+1];
-			if(START[i+1]) 
-			/*SI EL START DE ESA ETAPA SE CUMPLE, DEBEREMOS REALIZAR LAS OPERACIONES, ESTA SEÑAL NO ES COMO LA ANTERIOR, YA QUE AHORA REALIZAR LA OPERACIÓN IRA ATRAVESANDO NUESTRA RED SEGMENTADA,
-			DE MANERA QUE  SOLO CUANDO LA SEÑAL DE START ESTÉ ACTIVADA EN CADA ETAPA SE REAILZARÁ EL PROPIO DESPLAZAMIENTO*/ 
-			begin
+			if(START[i+1])begin
 				SignNum[i] <= SignNum[i+1];
 				SignDen[i] <= SignDen[i+1];
-				M[i] <= M[i+1];
-				{ACCU[i],Q[i]} <= {ACCU[i+1][tamanyo-2:0], Q[i+1], 1'b0};
+				M[i] <= M[i+1]; 
 
-				if (ACCU[i] >= M[i]) 
+				if (i%2 == 1)begin 
+				{ACCU[i],Q[i]} <= {ACCU[i+1][tamanyo-2:0], Q[i+1], 1'b0};
+				end
+				else begin
+				if (ACCU[i+1] >= M[i+1]) 
 				begin
-						Q[i] <= Q[i] + 1;
-						ACCU[i] <= ACCU[i] - M[i];
-				end 
+						Q[i] <= Q[i+1] + 1;
+						ACCU[i] <= ACCU[i+1] - M[i+1];
+				end
+				else begin
+						Q[i] <= Q[i+1];
+						ACCU[i] <= ACCU[i+1];
+					end
+						
+			end 
 				
 			end
 				
 		end
+
     end
 end
 
 assign Done = START[0];
 always_comb begin
-if (START[0]) // REALMENTE NO ES CONTADOR I==0, ES CUANDO HAYAN PASADO X CICLOS, POR LO QUE EL CONTADOR NO DEBERIAMOS ELIMINARLO??????????, voy a crear un contador por etapa. 
-begin
-	CocAux = (SignNum[0]^SignDen[0]) ? (~Q[0]+1) : Q[0];
-	ResAux = SignNum[0] ? (~ACCU[0]+1) : ACCU[0];
-end
+	if (START[0]) // REALMENTE NO ES CONTADOR I==0, ES CUANDO HAYAN PASADO X CICLOS, POR LO QUE EL CONTADOR NO DEBERIAMOS ELIMINARLO??????????, voy a crear un contador por etapa. 
+	begin
+
+		Coc = (SignNum[0]^SignDen[0]) ? (~Q[0]+1) : Q[0];
+		Res = SignNum[0] ? (~ACCU[0]+1) : ACCU[0];
+	end
+	else
+	begin
+		Coc = '0;
+		Res = '0;
+	end
 end
 
-assign Coc = CocAux;
-assign Res = ResAux;
 
 endmodule 
