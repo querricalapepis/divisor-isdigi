@@ -47,7 +47,7 @@ begin
 	divide(CLK, START);
 	@(DONE);
     #(T*2);
-    $finish;
+    $stop;
 	
 end
 	
