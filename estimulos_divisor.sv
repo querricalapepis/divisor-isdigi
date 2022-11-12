@@ -42,15 +42,6 @@ covergroup cg @(bus.stimulus_cb);
     }
 endgroup
 
-task muestrear;
-begin
-    //lanzamiento de procedimientos de monitorizacion
-     fork
-      sb.monitor_input; //lanzo el procedimiento de monitorizacion cambio entrada y calculo del valor target
-      sb.monitor_output;//lanzo el procedimiento de monitorizacion cambio salida y comparacion ideal
-     join_none
-end
-endtask  
 
 RandomInputGenerator #(.SIZE(SIZE)) randomInput;
 //declaracion de objetos
@@ -61,9 +52,7 @@ initial begin
     repeat(2) @(bus.stimulus_cb)
     cg_test = new();
 	randomInput = new();
-    sb = new();
-
-    // sb=new(monitorizar_ports); //construimos el scoreboard
+    sb = new(monitorizar); 
 
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(0);
@@ -72,6 +61,7 @@ initial begin
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
 	init();
+    muestrear();
    //zeroRemainderDivisions();
     //notZeroRemainderDivisions();
 
@@ -83,6 +73,16 @@ initial begin
     //end
 	$stop;
 end
+
+task muestrear;
+begin
+    //lanzamiento de procedimientos de monitorizacion
+     fork
+      sb.monitor_input; //lanzo el procedimiento de monitorizacion cambio entrada y calculo del valor target
+      sb.monitor_output;//lanzo el procedimiento de monitorizacion cambio salida y comparacion ideal
+     join_none
+end
+endtask  
 
 task init();
     bus.stimulus_cb.start <= 0;
@@ -153,14 +153,3 @@ endtask
 
 
 endprogram : estimulos_divisor
-
-
-//Scoreboard
-	// Scoreboard #(.SIZE(SIZE)) scoreboard;
-	// initial begin
-	// 	scoreboard = new(bus.monitor);
-	// 	fork
-	// 		scoreboard.monitor_input();
-	// 		scoreboard.monitor_output();
-	// 	join_none
-	// end
