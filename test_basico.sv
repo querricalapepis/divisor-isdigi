@@ -6,11 +6,11 @@ module test_basico();
 	logic CLK;
 	logic RSTn;
 	logic START;
-	logic [SIZE-1:0] NUM;
-	logic [SIZE-1:0] DEN;
+	logic signed [SIZE-1:0] NUM;
+	logic signed [SIZE-1:0] DEN;
 
-	logic [SIZE-1:0] COC;
-	logic [SIZE-1:0] RES;
+	logic signed [SIZE-1:0] COC;
+	logic signed [SIZE-1:0] RES;
 	logic DONE;
 Divisor_Algoritmico DUV(CLK, RSTn, START, NUM, DEN, COC, RES, DONE);
 defparam DUV.tamanyo = 32;
@@ -26,27 +26,17 @@ end
 initial 
 begin
 	START = 0;
-	NUM = 4;
-	DEN = 2;
+	NUM = -785348031;
+	DEN = 1810121551;
 	reset(CLK,RSTn);
 	divide(CLK, START);
     @(DONE);
     #(T*2);
- 	NUM = 4;
-	DEN = -2;
+ 	NUM = 2644475705;
+	DEN = 489659762;
 	divide(CLK, START);
 	@(DONE);
-    #(T*2);
-	NUM = -4;
-	DEN = 2;
-	divide(CLK, START);
-	@(DONE);
-    #(T*2);
-	NUM = -4;
-	DEN = -2;
-	divide(CLK, START);
-	@(DONE);
-    #(T*2);
+    #(T*2)
     $stop;
 	
 end

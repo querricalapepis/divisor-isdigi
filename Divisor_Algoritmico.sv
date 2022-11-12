@@ -3,11 +3,11 @@ module Divisor_Algoritmico
 (input CLK,
 input RSTa,
 input Start,
-input logic [tamanyo-1:0] Num,
-input logic [tamanyo-1:0] Den,
+input logic signed [tamanyo-1:0] Num,
+input logic signed [tamanyo-1:0] Den,
 
-output logic [tamanyo-1:0] Coc,
-output logic [tamanyo-1:0] Res,
+output logic signed [tamanyo-1:0] Coc,
+output logic signed [tamanyo-1:0] Res,
 output Done);
 
 
@@ -22,7 +22,7 @@ always_ff@(posedge CLK or negedge RSTa) begin
 	if(~RSTa) begin
 		state <= D0;
 		ACCU <= '0;
-		CONT <= tamanyo - 1;
+		CONT <= '0;
 		SignNum <= '0;
 		SignDen <= '0;
 		Q <= '0;
@@ -71,7 +71,7 @@ always_ff@(posedge CLK or negedge RSTa) begin
 				state <= D0;
 				fin <= 1'b1;
 				Coc <= (SignNum^SignDen) ? (~Q+1) : Q;
-				Res = SignNum ? (~ACCU+1) : ACCU;
+				Res <= SignNum ? (~ACCU+1) : ACCU;
 			end
 		endcase
 		
@@ -79,11 +79,17 @@ always_ff@(posedge CLK or negedge RSTa) begin
 
 
 assign Done = fin;
-//ASERCION DIVIDIR ENTRE 0 
+//ASERCION DIVIDIR ENTRE 0
+assert property (@(posedge CLK) Start |-> Den=='0)$fatal("No se puede dividir entre 0");
+// si done activo  y cociente y resto es 0 y los valores de entrada son distintos de 0
+assert property (@(posedge CLK) Done |-> $past(Num,32,CONT)!='0)  $error("va bien");
+// si haces una division y 32 cclos despues no tienes resultado
 
-assert property (@(posedge CLK) ($rose(fin) and Num[tamanyo - 1] and Den[tamanyo - 1]) |-> $past(Coc[tamanyo-1], 32) == 0 ) else $error("No realiza correctamente la operacion con signo");
+// comprobar reseteo, si al resetear las señales de despues no van bien
 
-assert property (@(posedge CLK) (!$stable(state) and state == 0)  |=> (ACCU == '0 and CONT == tamanyo-1) ) else $error("No inicializas correctamente");
+assert property (@(posedge CLK) ($rose(fin) and Num[tamanyo - 1] and Den[tamanyo - 1]) |-> $past(Coc[tamanyo-1], 65,CLK) >= 0 ) else $error("No realiza correctamente la operacion con signo");
+
+assert property (@(posedge CLK) (!fin and !$stable(state) and state == 0)  |=> (ACCU == '0 and CONT == tamanyo-1) ) else $error("No inicializas correctamente");
 
 assert property (@(posedge CLK) Start |=> (state==2)) else $error("No empieza a desplazar");
 
