@@ -22,7 +22,7 @@ always_ff@(posedge CLK or negedge RSTa) begin
 	if(~RSTa) begin
 		state <= D0;
 		ACCU <= '0;
-		CONT <= '0;
+		CONT <= tamanyo - 1;
 		SignNum <= '0;
 		SignDen <= '0;
 		Q <= '0;
@@ -80,5 +80,11 @@ always_ff@(posedge CLK or negedge RSTa) begin
 
 assign Done = fin;
 //ASERCION DIVIDIR ENTRE 0 
+
+assert property (@(posedge CLK) ($rose(fin) and Num[tamanyo - 1] and Den[tamanyo - 1]) |-> $past(Coc[tamanyo-1], 32) == 0 ) else $error("No realiza correctamente la operacion con signo");
+
+assert property (@(posedge CLK) (!$stable(state) and state == 0)  |=> (ACCU == '0 and CONT == tamanyo-1) ) else $error("No inicializas correctamente");
+
+assert property (@(posedge CLK) Start |=> (state==2)) else $error("No empieza a desplazar");
 
 endmodule 
