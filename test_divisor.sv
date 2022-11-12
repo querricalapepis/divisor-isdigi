@@ -3,7 +3,6 @@
 
 
 `include "interfaces.sv"
-`include "Scoreboard.sv"
 `include "estimulos_divisor.sv"
 
 module test_divisor();
@@ -36,7 +35,8 @@ module test_divisor();
 
 	// stimulus
 	estimulos_divisor #(.SIZE(SIZE)) estimulos(
-		.bus(interfaces.stimulus)
+		.testar (interfaces.stimulus),
+		.monitorizar (interfaces.monitor)
 	);
 
 	//DUV
@@ -44,13 +44,4 @@ module test_divisor();
 		.bus(interfaces.duv)
 	);
 
-	//Scoreboard
-	// Scoreboard #(.SIZE(SIZE)) scoreboard;
-	// initial begin
-	// 	scoreboard = new(bus.monitor);
-	// 	fork
-	// 		scoreboard.monitor_input();
-	// 		scoreboard.monitor_output();
-	// 	join_none
-	// end
 endmodule 
