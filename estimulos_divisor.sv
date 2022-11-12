@@ -22,16 +22,16 @@ class RandomInputGenerator #(parameter SIZE = 32);
 endclass
 
 program estimulos_divisor #(parameter SIZE = 32) (
-        test_if.test testar,
+        test_if.stimulus testar,
         test_if.monitor monitorizar  
   );
 
-covergroup cg @(bus.stimulus_cb);
-    num: coverpoint bus.stimulus_cb.numerador {
+covergroup cg @(testar.stimulus_cb);
+    num: coverpoint testar.stimulus_cb.numerador {
         bins pos = { [0:(2^SIZE)/2 -1] };
         bins neg = { [(2^SIZE)/2:$] };
     }
-    den: coverpoint bus.stimulus_cb.denominador {
+    den: coverpoint testar.stimulus_cb.denominador {
         bins pos = { [0:(2^SIZE)/2 -1] };
         bins neg = { [(2^SIZE)/2:$] };
         illegal_bins ilegal = {0};
@@ -49,10 +49,10 @@ cg cg_test;
 Scoreboard #(.SIZE(SIZE)) sb;
 
 initial begin
-    repeat(2) @(bus.stimulus_cb)
+    repeat(2) @(testar.stimulus_cb)
     cg_test = new();
 	randomInput = new();
-    sb = new(monitorizar); 
+    //sb = new(monitorizar); 
 
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(0);
@@ -61,7 +61,7 @@ initial begin
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
 	init();
-    muestrear();
+    //muestrear();
    //zeroRemainderDivisions();
     //notZeroRemainderDivisions();
 
@@ -85,22 +85,22 @@ end
 endtask  
 
 task init();
-    bus.stimulus_cb.start <= 0;
-    bus.stimulus_cb.numerador <= 0;
-    bus.stimulus_cb.denominador <= 0;
+    testar.stimulus_cb.start <= 0;
+    testar.stimulus_cb.numerador <= 0;
+    testar.stimulus_cb.denominador <= 0;
 endtask
 
 task divide();
-	bus.stimulus_cb.start <= 1;
-	@(bus.stimulus_cb) bus.stimulus_cb.start <= 0;
+	testar.stimulus_cb.start <= 1;
+	@(testar.stimulus_cb) testar.stimulus_cb.start <= 0;
 endtask
 
 task newDivision();
     assert(randomInput.randomize()); 
-    bus.stimulus_cb.numerador <= randomInput.numerador;
-    bus.stimulus_cb.denominador <= randomInput.denominador;
-    @(bus.stimulus_cb) divide();
-    @(bus.stimulus_cb.done);
+    testar.stimulus_cb.numerador <= randomInput.numerador;
+    testar.stimulus_cb.denominador <= randomInput.denominador;
+    @(testar.stimulus_cb) divide();
+    @(testar.stimulus_cb.done);
 endtask
 
 task zeroRemainderDivision();

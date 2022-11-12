@@ -107,19 +107,13 @@ always_comb begin
 
 
 assign Done = fin;
-//ASERCION DIVIDIR ENTRE 0
-// si done activo  y cociente y resto es 0 y los valores de entrada son distintos de 0
-// si haces una division y 32 cclos despues no tienes resultado
-// comprobar reseteo, si al resetear las señales de despues no van bien
 
 
+assert property (@(posedge CLK) (Num[tamanyo-1] or Den[tamanyo-1])  |-> ##32 Coc[tamanyo-1] ) else $error("No realiza correctamente la operacion con signo");
 
-// i haces una division con un positivo y un negativo el cociente tiene que ser negativo a no ser que el numerador sea 0
-assert property (@(posedge CLK) (Num[tamanyo-1] or Den[tamanyo-1])  |-> ##32 Coc[tamanyo-1] ) else $error(“No realiza correctamente la operación con signo”);
-// si estas en estado 0 las funciones estén en 0
-assert property (@(posedge CLK) (state == 0)  |-> (ACCU = '0 and CONT = tamanyo-1) ) else $error(“No inicializas correctamente”);
-// si start es uno que pase al siguiente estado ()
-assert property (@(posedge CLK) Start |=> (state==2) else $error(“No empieza a desplazar”);
+assert property (@(posedge CLK) (state == 0)  |-> (ACCU == '0 and CONT == tamanyo-1) ) else $error("No inicializas correctamente");
+
+assert property (@(posedge CLK) Start |=> (state==2)) else $error("No empieza a desplazar");
 
 
 endmodule
