@@ -52,7 +52,7 @@ initial begin
     repeat(2) @(testar.stimulus_cb)
     cg_test = new();
 	randomInput = new();
-    //sb = new(monitorizar); 
+    sb = new(monitorizar); 
 
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(0);
@@ -61,7 +61,7 @@ initial begin
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
 	init();
-    //muestrear();
+    muestrear();
    //zeroRemainderDivisions();
     //notZeroRemainderDivisions();
 
@@ -78,8 +78,8 @@ task muestrear;
 begin
     //lanzamiento de procedimientos de monitorizacion
      fork
-      sb.monitor_input; //lanzo el procedimiento de monitorizacion cambio entrada y calculo del valor target
-      sb.monitor_output;//lanzo el procedimiento de monitorizacion cambio salida y comparacion ideal
+      sb.monitor_input(); //lanzo el procedimiento de monitorizacion cambio entrada y calculo del valor target
+      sb.monitor_output();//lanzo el procedimiento de monitorizacion cambio salida y comparacion ideal
      join_none
 end
 endtask  
