@@ -1,5 +1,5 @@
 
-`include "Scoreboard.sv"
+
 
 class RandomInputGenerator #(parameter SIZE = 32);
 	randc logic [SIZE-1:0]  numerador;
@@ -42,37 +42,52 @@ covergroup cg @(testar.stimulus_cb);
     }
 endgroup
 
+typedef enum bit { SIN_SEGMENTAR, SEGMENTADO } e_duv_type;
+e_duv_type duv_type = SIN_SEGMENTAR;
+
+`include "Scoreboard.sv"
 
 RandomInputGenerator #(.SIZE(SIZE)) randomInput;
 //declaracion de objetos
 cg cg_test;
 Scoreboard #(.SIZE(SIZE)) sb;
-
+int count;
 initial begin
     repeat(2) @(testar.stimulus_cb)
     cg_test = new();
 	randomInput = new();
-    sb = new(monitorizar); 
+    sb = new(monitorizar, duv_type); 
 
+    disable_constrains();
+	init();
+    muestrear();
+   
+
+    count = 0;
+    while(count < 1 /*cg_test.get_coverage()<80*/) begin
+        zeroRemainderDivision();
+        notZeroRemainderDivision();
+        disable_constrains();
+        bothPositive();
+        bothNegative();
+        positiveNumNegativeDen();
+        negativeNumPositiveDen();
+        count += 1;
+    end
+    @(testar.stimulus_cb);
+	$stop;
+end
+
+task disable_constrains;
+begin
     randomInput.notZeroRemainder.constraint_mode(0);
     randomInput.zeroRemainder.constraint_mode(0);
     randomInput.numeradorPositive.constraint_mode(0);
     randomInput.denominadorPositive.constraint_mode(0);
     randomInput.numeradorNegative.constraint_mode(0);
     randomInput.denominadorNegative.constraint_mode(0);
-	init();
-    muestrear();
-   //zeroRemainderDivisions();
-    //notZeroRemainderDivisions();
-
-    //while(cg_test.get_coverage()<70) begin 
-        positiveDivision1();
-        positiveDivision2();
-        negativeDivision1();
-        negativeDivision2();
-    //end
-	$stop;
 end
+endtask
 
 task muestrear;
 begin
@@ -90,17 +105,20 @@ task init();
     testar.stimulus_cb.denominador <= 0;
 endtask
 
-task divide();
-	testar.stimulus_cb.start <= 1;
-	@(testar.stimulus_cb) testar.stimulus_cb.start <= 0;
-endtask
-
 task newDivision();
-    assert(randomInput.randomize()); 
+    assert(randomInput.randomize());
     testar.stimulus_cb.numerador <= randomInput.numerador;
     testar.stimulus_cb.denominador <= randomInput.denominador;
-    @(testar.stimulus_cb) divide();
-    @(testar.stimulus_cb.done);
+    if(duv_type == SIN_SEGMENTAR) begin
+        @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b1;
+        @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b0;
+        @(posedge testar.stimulus_cb.done);
+    end else if(duv_type == SEGMENTADO) begin
+        @(testar.stimulus_cb); testar.stimulus_cb.start <= 1'b1;
+    end else begin
+        $error("El duv_type es incorrecto");
+    end
+
 endtask
 
 task zeroRemainderDivision();
@@ -111,13 +129,13 @@ task zeroRemainderDivision();
     
 endtask
 
-task notZeroRemainderDivisions();
+task notZeroRemainderDivision();
     randomInput.notZeroRemainder.constraint_mode(1);
     randomInput.zeroRemainder.constraint_mode(0);
         newDivision();
 endtask
 
-task positiveDivision1();
+task bothPositive();
     randomInput.numeradorPositive.constraint_mode(1);
     randomInput.denominadorPositive.constraint_mode(1);
     randomInput.numeradorNegative.constraint_mode(0);
@@ -125,16 +143,15 @@ task positiveDivision1();
     newDivision();
 endtask
 
-task positiveDivision2();
+task bothNegative();
     randomInput.numeradorPositive.constraint_mode(0);
     randomInput.denominadorPositive.constraint_mode(0);
     randomInput.numeradorNegative.constraint_mode(1);
     randomInput.denominadorNegative.constraint_mode(1);
-       newDivision();
+    newDivision();
 endtask
 
-
-task negativeDivision1();
+task positiveNumNegativeDen();
     randomInput.numeradorPositive.constraint_mode(1);
     randomInput.denominadorPositive.constraint_mode(0);
     randomInput.numeradorNegative.constraint_mode(0);
@@ -142,14 +159,12 @@ task negativeDivision1();
         newDivision();
 endtask
 
-task negativeDivision2();
+task negativeNumPositiveDen();
     randomInput.numeradorPositive.constraint_mode(0);
     randomInput.denominadorPositive.constraint_mode(1);
     randomInput.numeradorNegative.constraint_mode(1);
     randomInput.denominadorNegative.constraint_mode(0);
         newDivision();
 endtask
-
-
 
 endprogram : estimulos_divisor

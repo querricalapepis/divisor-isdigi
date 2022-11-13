@@ -26,14 +26,14 @@ end
 initial 
 begin
 	START = 0;
-	NUM = -785348031;
-	DEN = 1810121551;
+	NUM = -2;
+	DEN = 2;
 	reset(CLK,RSTn);
 	divide(CLK, START);
     @(DONE);
     #(T*2);
- 	NUM = 2644475705;
-	DEN = 489659762;
+ 	NUM = 2;
+	DEN = 2;
 	divide(CLK, START);
 	@(DONE);
     #(T*2)

@@ -19,6 +19,7 @@ module test_divisor();
 	logic [SIZE-1:0] RES;
 	logic DONE;
 	
+	
 	initial
 	begin
 		CLK = 0;
@@ -44,4 +45,4 @@ module test_divisor();
 		.bus(interfaces.duv)
 	);
 
-endmodule 
+endmodule
