@@ -35,10 +35,6 @@ covergroup cg;
         bins pos[100] = { [$:-1] };
         bins neg[100] = { [0:$] };
     }
-    illegal: coverpoint testar.stimulus_cb.denominador iff(testar.stimulus_cb.start == 1) {
-        illegal_bins no_legal = {0};
-        ignore_bins ignore = { [$:-1],[1:$] };
-    }
     // numXden : cross num, den {  // 16 bins
     //     bins pos[100] = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
     //     bins neg[100] = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
@@ -46,7 +42,7 @@ covergroup cg;
 endgroup
 
 typedef enum bit { SIN_SEGMENTAR, SEGMENTADO } e_duv_type;
-e_duv_type duv_type = SEGMENTADO;
+e_duv_type duv_type = SIN_SEGMENTAR;
 
 `include "Scoreboard.sv"
 
@@ -68,33 +64,33 @@ initial begin
 end
 
 task do_tests(); begin
-       //while(cg_test.get_coverage() < 10) begin
+       while(cg_test.get_coverage() < 10) begin
             disable_constrains();
             zeroRemainderDivision();
-            //cg_test.sample();
+            cg_test.sample();
 
             disable_constrains();
             notZeroRemainderDivision();
-            //cg_test.sample();
+            cg_test.sample();
 
             disable_constrains();
             bothPositive();
-            //cg_test.sample();
+            cg_test.sample();
 
             disable_constrains();
             bothNegative();
-            //cg_test.sample();
+            cg_test.sample();
 
             disable_constrains();
             positiveNumNegativeDen();
-            //cg_test.sample();
+            cg_test.sample();
 
             disable_constrains();
             negativeNumPositiveDen();
-            //cg_test.sample();
+            cg_test.sample();
 
             $display("Curret COVERAGE: %d", cg_test.get_coverage());
-       //end
+       end
         testar.stimulus_cb.start <= 0;
 end
 endtask

@@ -1,5 +1,5 @@
 //`timescale 1ns/1ps
-interface test_if #(parameter SIZE=32) (input bit clk, input bit rst_n);
+interface test_if #(parameter SIZE = 32) (input bit clk, input bit rst_n);
     logic start;
     logic signed [SIZE-1:0] numerador;
     logic signed [SIZE-1:0] denominador;

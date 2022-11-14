@@ -10,11 +10,11 @@ class Result #(parameter SIZE = 32);
 endclass
 
 class Scoreboard #(parameter SIZE = 32);
-    Result cola_targets[$];
+    Result #(.SIZE(SIZE)) cola_targets[$];
     e_duv_type duv_type;
-    virtual test_if.monitor mports;
+    virtual test_if.monitor #(.SIZE(SIZE)) mports;
 
-    function new(virtual test_if.monitor mports, e_duv_type duv_type);
+    function new(virtual test_if.monitor #(.SIZE(SIZE)) mports, e_duv_type duv_type);
     begin
         this.mports = mports;
         this.duv_type = duv_type;
@@ -71,7 +71,7 @@ class Scoreboard #(parameter SIZE = 32);
 
     task display_result();
     begin
-        Result want = cola_targets.pop_front();
+        Result #(.SIZE(SIZE)) want = cola_targets.pop_front();
         $display("GOLDEN: cociente: %d, resto: %d. CASERO: cociente: %d, resto:%d", want.cociente,want.resto,mports.monitor_cb.cociente,mports.monitor_cb.resto);
         assert(want.cociente == mports.monitor_cb.cociente)
         else $error("error cociente de %d entre %d: quiero %d tengo %d", mports.monitor_cb.numerador, mports.monitor_cb.denominador, want.cociente, mports.monitor_cb.cociente);

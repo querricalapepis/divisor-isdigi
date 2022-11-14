@@ -1,14 +1,12 @@
 `timescale 1ns/1ps
 
-
-
 `include "interfaces.sv"
 `include "estimulos_divisor.sv"
 `include "divisor_segmentado_top.sv"
 
 module test_divisor();
 	localparam T = 10;
-	localparam SIZE = 32;
+	localparam SIZE = 8;
 
 	logic CLK;
 	logic RST_N;
@@ -19,7 +17,6 @@ module test_divisor();
 	logic [SIZE-1:0] COC;
 	logic [SIZE-1:0] RES;
 	logic DONE;
-	
 	
 	initial
 	begin
@@ -42,12 +39,12 @@ module test_divisor();
 	);
 
 	//DUV
-	// divisor_top #(.tamanyo(SIZE)) duv (
-	// 	.bus(interfaces.duv)
-	// );
-
-	divisor_segmentado_top #(.tamanyo(SIZE)) duv (
+	divisor_top #(.tamanyo(SIZE)) duv (
 		.bus(interfaces.duv)
 	);
+
+	// divisor_segmentado_top #(.tamanyo(SIZE)) duv (
+	// 	.bus(interfaces.duv)
+	// );
 
 endmodule
