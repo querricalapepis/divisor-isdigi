@@ -26,20 +26,23 @@ program estimulos_divisor #(parameter SIZE = 32) (
         test_if.monitor monitorizar  
   );
 
-covergroup cg @(testar.stimulus_cb);
+covergroup cg;
     num: coverpoint testar.stimulus_cb.numerador {
-        bins pos = { [0:(2^SIZE)/2 -1] };
-        bins neg = { [(2^SIZE)/2:$] };
+        bins pos[100] = { [$:-1] };
+        bins neg[100] = { [0:$] };
     }
     den: coverpoint testar.stimulus_cb.denominador {
-        bins pos = { [0:(2^SIZE)/2 -1] };
-        bins neg = { [(2^SIZE)/2:$] };
-        illegal_bins ilegal = {0};
+        bins pos[100] = { [$:-1] };
+        bins neg[100] = { [0:$] };
     }
-    c : cross num, den {  // 16 bins
-        bins pos = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
-        bins neg = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
+    illegal: coverpoint testar.stimulus_cb.denominador iff(testar.stimulus_cb.start == 1) {
+        illegal_bins no_legal = {0};
+        ignore_bins ignore = { [$:-1],[1:$] };
     }
+    // numXden : cross num, den {  // 16 bins
+    //     bins pos[100] = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
+    //     bins neg[100] = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
+    // }
 endgroup
 
 typedef enum bit { SIN_SEGMENTAR, SEGMENTADO } e_duv_type;
@@ -51,7 +54,6 @@ RandomInputGenerator #(.SIZE(SIZE)) randomInput;
 //declaracion de objetos
 cg cg_test;
 Scoreboard #(.SIZE(SIZE)) sb;
-int count;
 initial begin
     init();
     repeat(2) @(testar.stimulus_cb)
@@ -59,27 +61,43 @@ initial begin
 	randomInput = new();
     sb = new(monitorizar, duv_type); 
     muestrear();
-    count = 0;
-    while(count < 1 /*cg_test.get_coverage()<80*/) begin
-        disable_constrains();
-        zeroRemainderDivision();
-        disable_constrains();
-        notZeroRemainderDivision();
-        disable_constrains();
-        bothPositive();
-        disable_constrains();
-        bothNegative();
-        disable_constrains();
-        positiveNumNegativeDen();
-        disable_constrains();
-        negativeNumPositiveDen();
-        count += 1;
-    end
-    testar.stimulus_cb.start <= 0;
+    do_tests();
     @(negedge testar.stimulus_cb.done);
     @(testar.stimulus_cb);
-	$stop;
+    $stop;
 end
+
+task do_tests(); begin
+       //while(cg_test.get_coverage() < 10) begin
+            disable_constrains();
+            zeroRemainderDivision();
+            //cg_test.sample();
+
+            disable_constrains();
+            notZeroRemainderDivision();
+            //cg_test.sample();
+
+            disable_constrains();
+            bothPositive();
+            //cg_test.sample();
+
+            disable_constrains();
+            bothNegative();
+            //cg_test.sample();
+
+            disable_constrains();
+            positiveNumNegativeDen();
+            //cg_test.sample();
+
+            disable_constrains();
+            negativeNumPositiveDen();
+            //cg_test.sample();
+
+            $display("Curret COVERAGE: %d", cg_test.get_coverage());
+       //end
+        testar.stimulus_cb.start <= 0;
+end
+endtask
 
 task disable_constrains;
 begin

@@ -53,15 +53,30 @@ class Scoreboard #(parameter SIZE = 32);
     begin
         while(1)
         begin
-            @(posedge mports.monitor_cb.done) begin
-                Result want = cola_targets.pop_front();
-                $display("GOLDEN: cociente: %d, resto: %d. CASERO: cociente: %d, resto:%d", want.cociente,want.resto,mports.monitor_cb.cociente,mports.monitor_cb.resto);
-                assert(want.cociente == mports.monitor_cb.cociente)
-                else $error("error cociente de %d entre %d: quiero %d tengo %d", mports.monitor_cb.numerador, mports.monitor_cb.denominador, want.cociente, mports.monitor_cb.cociente);
-                assert(want.resto == mports.monitor_cb.resto)
-                else $error("error resto de %d entre %d: quiero %d tengo %d", mports.monitor_cb.numerador, mports.monitor_cb.denominador, want.resto, mports.monitor_cb.resto);
-            end      
+            if(duv_type == SIN_SEGMENTAR) begin
+                @(posedge mports.monitor_cb.done) begin
+                display_result();
+                end
+            end else if(duv_type == SEGMENTADO) begin
+                @(mports.monitor_cb);
+                if(mports.monitor_cb.done  == 1)
+                begin
+                    display_result();
+                end
+            end
+                  
         end
+    end
+    endtask
+
+    task display_result();
+    begin
+        Result want = cola_targets.pop_front();
+        $display("GOLDEN: cociente: %d, resto: %d. CASERO: cociente: %d, resto:%d", want.cociente,want.resto,mports.monitor_cb.cociente,mports.monitor_cb.resto);
+        assert(want.cociente == mports.monitor_cb.cociente)
+        else $error("error cociente de %d entre %d: quiero %d tengo %d", mports.monitor_cb.numerador, mports.monitor_cb.denominador, want.cociente, mports.monitor_cb.cociente);
+        assert(want.resto == mports.monitor_cb.resto)
+        else $error("error resto de %d entre %d: quiero %d tengo %d", mports.monitor_cb.numerador, mports.monitor_cb.denominador, want.resto, mports.monitor_cb.resto);
     end
     endtask
 endclass
