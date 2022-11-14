@@ -123,7 +123,7 @@ task newDivision();
     testar.stimulus_cb.numerador <= randomInput.numerador;
     testar.stimulus_cb.denominador <= randomInput.denominador;
     if(DUV_TYPE == 0) begin
-        @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b1;
+        testar.stimulus_cb.start <= 1'b1;
         @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b0;
         @(posedge testar.stimulus_cb.done);
     end else if(DUV_TYPE == 1) begin
