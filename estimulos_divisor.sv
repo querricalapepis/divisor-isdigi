@@ -27,7 +27,7 @@ program estimulos_divisor #(parameter SIZE = 32, DUV_TYPE = 0) (
   );
 
 
-covergroup cg;
+covergroup cg @(testar.stimulus_cb);
     num: coverpoint testar.stimulus_cb.numerador {
         bins pos[100] = { [$:-1] };
         bins neg[100] = { [0:$] };
@@ -39,6 +39,10 @@ covergroup cg;
     numXden : cross num, den {  // 16 bins
         bins pos = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
         bins neg = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
+    }
+    illegal: coverpoint testar.stimulus_cb.denominador iff(testar.stimulus_cb.start == 1) {
+        illegal_bins no_legal = {0};
+        ignore_bins ignore = { [$:-1],[1:$] };
     }
 
 endgroup
@@ -63,30 +67,24 @@ initial begin
 end
 
 task do_tests(); begin
-       while(cg_test.get_coverage() < 80) begin
+       while(cg_test.get_coverage() < 99.8) begin
             disable_constrains();
             zeroRemainderDivision();
-            cg_test.sample();
 
             disable_constrains();
             notZeroRemainderDivision();
-            cg_test.sample();
 
             disable_constrains();
             bothPositive();
-            cg_test.sample();
 
             disable_constrains();
             bothNegative();
-            cg_test.sample();
 
             disable_constrains();
             positiveNumNegativeDen();
-            cg_test.sample();
 
             disable_constrains();
             negativeNumPositiveDen();
-            cg_test.sample();
 
             $display("Curret COVERAGE: %d", cg_test.get_coverage());
        end
