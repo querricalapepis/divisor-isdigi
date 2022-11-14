@@ -4,6 +4,7 @@
 
 `include "interfaces.sv"
 `include "estimulos_divisor.sv"
+`include "divisor_segmentado_top.sv"
 
 module test_divisor();
 	localparam T = 10;
@@ -41,7 +42,11 @@ module test_divisor();
 	);
 
 	//DUV
-	divisor_top #(.tamanyo(SIZE)) duv (
+	// divisor_top #(.tamanyo(SIZE)) duv (
+	// 	.bus(interfaces.duv)
+	// );
+
+	divisor_segmentado_top #(.tamanyo(SIZE)) duv (
 		.bus(interfaces.duv)
 	);
 

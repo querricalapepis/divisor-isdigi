@@ -43,7 +43,7 @@ covergroup cg @(testar.stimulus_cb);
 endgroup
 
 typedef enum bit { SIN_SEGMENTAR, SEGMENTADO } e_duv_type;
-e_duv_type duv_type = SIN_SEGMENTAR;
+e_duv_type duv_type = SEGMENTADO;
 
 `include "Scoreboard.sv"
 
@@ -53,27 +53,30 @@ cg cg_test;
 Scoreboard #(.SIZE(SIZE)) sb;
 int count;
 initial begin
+    init();
     repeat(2) @(testar.stimulus_cb)
     cg_test = new();
 	randomInput = new();
     sb = new(monitorizar, duv_type); 
-
-    disable_constrains();
-	init();
     muestrear();
-   
-
     count = 0;
     while(count < 1 /*cg_test.get_coverage()<80*/) begin
+        disable_constrains();
         zeroRemainderDivision();
+        disable_constrains();
         notZeroRemainderDivision();
         disable_constrains();
         bothPositive();
+        disable_constrains();
         bothNegative();
+        disable_constrains();
         positiveNumNegativeDen();
+        disable_constrains();
         negativeNumPositiveDen();
         count += 1;
     end
+    testar.stimulus_cb.start <= 0;
+    @(negedge testar.stimulus_cb.done);
     @(testar.stimulus_cb);
 	$stop;
 end
@@ -103,6 +106,7 @@ task init();
     testar.stimulus_cb.start <= 0;
     testar.stimulus_cb.numerador <= 0;
     testar.stimulus_cb.denominador <= 0;
+    @(testar.stimulus_cb);
 endtask
 
 task newDivision();
@@ -114,7 +118,8 @@ task newDivision();
         @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b0;
         @(posedge testar.stimulus_cb.done);
     end else if(duv_type == SEGMENTADO) begin
-        @(testar.stimulus_cb); testar.stimulus_cb.start <= 1'b1;
+        testar.stimulus_cb.start <= 1'b1;
+        @(testar.stimulus_cb);
     end else begin
         $error("El duv_type es incorrecto");
     end
