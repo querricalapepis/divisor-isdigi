@@ -64,7 +64,7 @@ initial begin
 end
 
 task do_tests(); begin
-       while(cg_test.get_coverage() < 10) begin
+       while(cg_test.get_coverage() < 80) begin
             disable_constrains();
             zeroRemainderDivision();
             cg_test.sample();
