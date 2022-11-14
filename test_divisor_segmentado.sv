@@ -4,7 +4,8 @@
 `include "estimulos_divisor.sv"
 `include "divisor_segmentado_top.sv"
 
-module test_divisor();
+module test_divisor_segmentado();
+
 	localparam T = 10;
 	localparam SIZE = 8;
 
@@ -33,7 +34,7 @@ module test_divisor();
 	test_if #(.SIZE(SIZE)) interfaces(.clk(CLK), .rst_n(RST_N));
 
 	// stimulus
-	estimulos_divisor #(.SIZE(SIZE)) estimulos(
+	estimulos_divisor #(.SIZE(SIZE), .DUV_TYPE(1)) estimulos(
 		.testar (interfaces.stimulus),
 		.monitorizar (interfaces.monitor)
 	);

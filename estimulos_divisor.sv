@@ -1,6 +1,5 @@
 
 
-
 class RandomInputGenerator #(parameter SIZE = 32);
 	randc logic [SIZE-1:0]  numerador;
 	randc logic [SIZE-1:0] denominador;
@@ -21,10 +20,12 @@ class RandomInputGenerator #(parameter SIZE = 32);
 	endfunction
 endclass
 
-program estimulos_divisor #(parameter SIZE = 32) (
+
+program estimulos_divisor #(parameter SIZE = 32, DUV_TYPE = 0) (
         test_if.stimulus testar,
-        test_if.monitor monitorizar  
+        test_if.monitor monitorizar
   );
+
 
 covergroup cg;
     num: coverpoint testar.stimulus_cb.numerador {
@@ -35,27 +36,25 @@ covergroup cg;
         bins pos[100] = { [$:-1] };
         bins neg[100] = { [0:$] };
     }
-    // numXden : cross num, den {  // 16 bins
-    //     bins pos[100] = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
-    //     bins neg[100] = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
-    // }
-endgroup
+    numXden : cross num, den {  // 16 bins
+        bins pos = (binsof(num.pos) && binsof(den.pos)) || (binsof(num.neg) && binsof(den.neg));
+        bins neg = (binsof(num.pos) && binsof(den.neg)) || (binsof(num.neg) && binsof(den.pos));
+    }
 
-typedef enum bit { SIN_SEGMENTAR, SEGMENTADO } e_duv_type;
-e_duv_type duv_type = SEGMENTADO;
+endgroup
 
 `include "Scoreboard.sv"
 
 RandomInputGenerator #(.SIZE(SIZE)) randomInput;
 //declaracion de objetos
 cg cg_test;
-Scoreboard #(.SIZE(SIZE)) sb;
+Scoreboard #(.SIZE(SIZE), .DUV_TYPE(DUV_TYPE)) sb;
 initial begin
     init();
     repeat(2) @(testar.stimulus_cb)
     cg_test = new();
 	randomInput = new();
-    sb = new(monitorizar, duv_type); 
+    sb = new(monitorizar); 
     muestrear();
     do_tests();
     @(negedge testar.stimulus_cb.done);
@@ -127,11 +126,11 @@ task newDivision();
     assert(randomInput.randomize());
     testar.stimulus_cb.numerador <= randomInput.numerador;
     testar.stimulus_cb.denominador <= randomInput.denominador;
-    if(duv_type == SIN_SEGMENTAR) begin
+    if(DUV_TYPE == 0) begin
         @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b1;
         @(testar.stimulus_cb) testar.stimulus_cb.start <= 1'b0;
         @(posedge testar.stimulus_cb.done);
-    end else if(duv_type == SEGMENTADO) begin
+    end else if(DUV_TYPE == 1) begin
         testar.stimulus_cb.start <= 1'b1;
         @(testar.stimulus_cb);
     end else begin

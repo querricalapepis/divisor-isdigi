@@ -1,3 +1,6 @@
+
+
+
 class Result #(parameter SIZE = 32);
      logic signed [SIZE-1:0] cociente;
      logic signed [SIZE-1:0] resto;
@@ -8,16 +11,15 @@ class Result #(parameter SIZE = 32);
     endfunction
 
 endclass
+`include "e_duv_type.sv"
 
-class Scoreboard #(parameter SIZE = 32);
+class Scoreboard #(parameter SIZE = 32, DUV_TYPE = 0);
     Result #(.SIZE(SIZE)) cola_targets[$];
-    e_duv_type duv_type;
     virtual test_if.monitor #(.SIZE(SIZE)) mports;
 
-    function new(virtual test_if.monitor #(.SIZE(SIZE)) mports, e_duv_type duv_type);
+    function new(virtual test_if.monitor #(.SIZE(SIZE)) mports);
     begin
         this.mports = mports;
-        this.duv_type = duv_type;
     end
     endfunction
 
@@ -25,10 +27,10 @@ class Scoreboard #(parameter SIZE = 32);
     begin
         while(1)
         begin
-            if(duv_type == SIN_SEGMENTAR) begin
+            if(DUV_TYPE == 0) begin
             @(posedge mports.monitor_cb.start);
                     save_input();   
-            end else if(duv_type == SEGMENTADO) begin
+            end else if(DUV_TYPE == 1) begin
             @(mports.monitor_cb);
                 if(mports.monitor_cb.start  == 1)
                 begin
@@ -53,11 +55,11 @@ class Scoreboard #(parameter SIZE = 32);
     begin
         while(1)
         begin
-            if(duv_type == SIN_SEGMENTAR) begin
+            if(DUV_TYPE == 0) begin
                 @(posedge mports.monitor_cb.done) begin
                 display_result();
                 end
-            end else if(duv_type == SEGMENTADO) begin
+            end else if(DUV_TYPE == 1) begin
                 @(mports.monitor_cb);
                 if(mports.monitor_cb.done  == 1)
                 begin
