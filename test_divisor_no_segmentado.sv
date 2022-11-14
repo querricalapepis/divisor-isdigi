@@ -33,7 +33,7 @@ module test_divisor_no_segmentado();
 	test_if #(.SIZE(SIZE)) interfaces(.clk(CLK), .rst_n(RST_N));
 
 	// stimulus
-	estimulos_divisor #(.SIZE(SIZE), .DUV_TYPE(1)) estimulos(
+	estimulos_divisor #(.SIZE(SIZE), .DUV_TYPE(0)) estimulos(
 		.testar (interfaces.stimulus),
 		.monitorizar (interfaces.monitor)
 	);

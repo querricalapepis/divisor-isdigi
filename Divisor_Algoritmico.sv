@@ -83,7 +83,7 @@ assign Done = fin;
 
 assert property (@(posedge CLK) disable iff(RSTa===1'b0) Start |-> Den!='0) else $fatal("No se puede dividir entre 0");
 //YA SE ESTA REALIZANDO UNA DIVISION
-assert property (@(posedge CLK) disable iff(RSTa===1'b0) Start |-> state=='0) else $error("Ya se esta realizando una division");
+assert property (@(posedge CLK) disable iff(RSTa===1'b0) $rose(Start) |-> state=='0) else $error("Ya se esta realizando una division");
 // si done activo  y cociente y resto es 0 y los valores de entrada son distintos de 0
 assert property (@(posedge CLK) disable iff(RSTa===1'b0) $rose(Done) and Coc=='0 and  Res==0 |-> $past(Num, tamanyo * 2 + 1) == 0 ) else $error("No divide correctamente");
 // si haces una division y 65 cclos despues no tienes resultado

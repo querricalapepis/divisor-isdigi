@@ -85,8 +85,6 @@ task do_tests(); begin
 
             disable_constrains();
             negativeNumPositiveDen();
-
-            $display("Curret COVERAGE: %d", cg_test.get_coverage());
        end
         testar.stimulus_cb.start <= 0;
 end
