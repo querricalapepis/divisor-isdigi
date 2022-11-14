@@ -39,11 +39,6 @@ module test_divisor_segmentado();
 		.monitorizar (interfaces.monitor)
 	);
 
-	//DUV
-	// divisor_top #(.tamanyo(SIZE)) duv (
-	// 	.bus(interfaces.duv)
-	// );
-
 	divisor_segmentado_top #(.tamanyo(SIZE)) duv (
 		.bus(interfaces.duv)
 	);
