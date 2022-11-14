@@ -13,7 +13,7 @@ module test_basico();
 	logic signed [SIZE-1:0] RES;
 	logic DONE;
 Divisor_Algoritmico DUV(CLK, RSTn, START, NUM, DEN, COC, RES, DONE);
-defparam DUV.tamanyo = 32;
+defparam DUV.tamanyo = SIZE;
 
 localparam T = 10;
 
