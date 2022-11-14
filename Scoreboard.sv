@@ -11,7 +11,6 @@ class Result #(parameter SIZE = 32);
     endfunction
 
 endclass
-`include "e_duv_type.sv"
 
 class Scoreboard #(parameter SIZE = 32, DUV_TYPE = 0);
     Result #(.SIZE(SIZE)) cola_targets[$];
