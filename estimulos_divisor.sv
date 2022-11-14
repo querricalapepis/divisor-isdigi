@@ -42,7 +42,7 @@ covergroup cg;
 endgroup
 
 typedef enum bit { SIN_SEGMENTAR, SEGMENTADO } e_duv_type;
-e_duv_type duv_type = SIN_SEGMENTAR;
+e_duv_type duv_type = SEGMENTADO;
 
 `include "Scoreboard.sv"
 

@@ -39,12 +39,12 @@ module test_divisor();
 	);
 
 	//DUV
-	divisor_top #(.tamanyo(SIZE)) duv (
-		.bus(interfaces.duv)
-	);
-
-	// divisor_segmentado_top #(.tamanyo(SIZE)) duv (
+	// divisor_top #(.tamanyo(SIZE)) duv (
 	// 	.bus(interfaces.duv)
 	// );
+
+	divisor_segmentado_top #(.tamanyo(SIZE)) duv (
+		.bus(interfaces.duv)
+	);
 
 endmodule

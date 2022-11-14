@@ -104,7 +104,7 @@ end
 assert property (@(posedge CLK) disable iff(RSTa===1'b0) Start |-> Den!='0) else $fatal("No se puede dividir entre 0");
 
 // si done activo  y cociente y resto es 0 y los valores de entrada son distintos de 0ç
-assert property (@(posedge CLK) disable iff(RSTa===1'b0) Done and Coc=='0 and  Res==0 |-> $past(Num, 65,CLK)==0 ) else $error("No divide correctamente");
+assert property (@(posedge CLK) disable iff(RSTa===1'b0) $rose(Done) and Coc=='0 and  Res==0 |-> $past(Num, tamanyo * 2 - 1) == 0 ) else $error("No divide correctamente");
 
 // si haces una division y 32 cclos despues no tienes resultado
 // comprobar reseteo, si al resetear las señales de despues no van bien
